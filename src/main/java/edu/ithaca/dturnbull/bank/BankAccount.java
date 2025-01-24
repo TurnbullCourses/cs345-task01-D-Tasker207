@@ -41,8 +41,7 @@ public class BankAccount {
     }
 
     public static boolean isEmailValid(String email) {
-        int atSymbol = email.indexOf('@');
-        if (atSymbol == -1) {
+        if (email.indexOf('@') == -1) {
             return false;
         }
         String[] emailParts = email.split("@");
