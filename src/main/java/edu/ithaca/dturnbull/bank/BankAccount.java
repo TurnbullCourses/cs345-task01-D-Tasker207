@@ -69,6 +69,21 @@ public class BankAccount {
         }
     }
 
+    /**
+     * 
+     * @param amount amount to deposit
+     * @throws IllegalArgumentException if amount is negative or has more than two
+     *                                  decimal places
+     * @post increases the balance by amount if amount is non-negative
+     */
+    public void deposit(double amount) {
+
+    }
+
+    /**
+     * @param email email to validate
+     * @return true if email is valid, false otherwise
+     */
     public static boolean isEmailValid(String email) {
         if (email.indexOf('@') == -1) {
             return false;

@@ -35,6 +35,28 @@ class BankAccountTest {
     }
 
     @Test
+    void depositTest() {
+        BankAccount bankAccount = new BankAccount("a@b.com", 0);
+        assertEquals(bankAccount.getBalance(), 0, 0.001);
+
+        // Valid cases
+        bankAccount.deposit(100);
+        assertEquals(bankAccount.getBalance(), 100, 0.001);
+        bankAccount.deposit(0.01);
+        assertEquals(bankAccount.getBalance(), 100.01, 0.001);
+        bankAccount.deposit(0.1);
+        assertEquals(bankAccount.getBalance(), 100.11, 0.001);
+        bankAccount.deposit(0.10);
+        assertEquals(bankAccount.getBalance(), 100.21, 0.001);
+
+        // Invalid cases
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.deposit(-100));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.deposit(0.001));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.deposit(-100.001));
+
+    }
+
+    @Test
     void isAmountValidTest() {
         // True Equivelance Class
         assertDoesNotThrow(() -> new BankAccount("a@b.com", 0));
