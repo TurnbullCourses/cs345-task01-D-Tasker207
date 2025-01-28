@@ -40,6 +40,8 @@ class BankAccountTest {
         assertEquals(bankAccount.getBalance(), 0, 0.001);
 
         // Valid cases
+        bankAccount.deposit(0);
+        assertEquals(bankAccount.getBalance(), 0, 0.001);
         bankAccount.deposit(100);
         assertEquals(bankAccount.getBalance(), 100, 0.001);
         bankAccount.deposit(0.01);

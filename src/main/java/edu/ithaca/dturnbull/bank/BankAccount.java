@@ -28,7 +28,7 @@ public class BankAccount {
      * @param amount amount to check
      * @throws IllegalArgumentException if amount is negative or has more than two
      */
-    private void isAmountValid(double amount) throws IllegalArgumentException {
+    private static void isAmountValid(double amount) throws IllegalArgumentException {
         if (amount < 0) {
             throw new IllegalArgumentException("Amount cannot be negative");
         }
@@ -92,7 +92,9 @@ public class BankAccount {
      */
     public static void transfer(BankAccount source, BankAccount dest, double amount)
             throws InsufficientFundsException {
-
+        isAmountValid(amount);
+        source.withdraw(amount);
+        dest.deposit(amount);
     }
 
     /**
