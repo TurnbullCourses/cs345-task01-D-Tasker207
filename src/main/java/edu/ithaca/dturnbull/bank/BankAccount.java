@@ -29,7 +29,13 @@ public class BankAccount {
      * @throws IllegalArgumentException if amount is negative or has more than two
      */
     private void isAmountValid(double amount) throws IllegalArgumentException {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
 
+        if (amount * 100 != (int) (amount * 100)) {
+            throw new IllegalArgumentException("Amount must have at most two decimal places");
+        }
     }
 
     public double getBalance() {
