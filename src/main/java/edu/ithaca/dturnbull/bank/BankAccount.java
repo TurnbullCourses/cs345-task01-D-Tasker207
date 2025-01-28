@@ -56,11 +56,7 @@ public class BankAccount {
      *       than balance
      */
     public void withdraw(double amount) throws InsufficientFundsException {
-        if (amount <= 0)
-            throw new IllegalArgumentException("Cannot withdraw a negative or zero amount");
-
-        if (amount * 100 != (int) (amount * 100))
-            throw new IllegalArgumentException("Amount must have at most two decimal places");
+        isAmountValid(amount);
 
         if (amount <= balance) {
             balance -= amount;
@@ -89,6 +85,10 @@ public class BankAccount {
      * @throws InsufficientFundsException if amount is greater than balance
      * @throws IllegalArgumentException   if amount is negative or has more than two
      *                                    decimal places
+     * @post reduces the balance of source by amount and increases the balance of
+     *       dest by amount if amount is non-negative and smaller than balance
+     * @post does not change the balance of either account if amount is negative or
+     *       has more than two decimal places
      */
     public static void transfer(BankAccount source, BankAccount dest, double amount)
             throws InsufficientFundsException {
