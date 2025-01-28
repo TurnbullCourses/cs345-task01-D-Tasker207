@@ -16,38 +16,80 @@ class BankAccountTest {
     void withdrawTest() throws InsufficientFundsException {
         BankAccount bankAccount = new BankAccount("a@b.com", 200);
         bankAccount.withdraw(100);
-
         assertEquals(100, bankAccount.getBalance(), 0.001);
+
+        // only up to two decimal places
+        bankAccount.withdraw(0.1);
+        assertEquals(99.90, bankAccount.getBalance(), 0.001);
+        bankAccount.withdraw(0.01);
+        assertEquals(99.89, bankAccount.getBalance(), 0.001);
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.withdraw(100.001));
+
+        // checking exception is thrown when withdrawing more than balance
         assertThrows(InsufficientFundsException.class, () -> bankAccount.withdraw(300));
+        assertThrows(InsufficientFundsException.class, () -> bankAccount.withdraw(100.01));
+
+        // checking exception is thrown when withdrawing negative or zero amount
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.withdraw(-100));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.withdraw(0));
+    }
+
+    @Test
+    void isAmountValidTest() {
+        // True Equivelance Class
+        assertDoesNotThrow(() -> new BankAccount("a@b.com", 0));
+        assertDoesNotThrow(() -> new BankAccount("a@b.com", 0.01));
+        assertDoesNotThrow(() -> new BankAccount("a@b.com", 100));
+        assertDoesNotThrow(() -> new BankAccount("a@b.com", 100.01));
+        assertDoesNotThrow(() -> new BankAccount("a@b.com", 100.1));
+        assertDoesNotThrow(() -> new BankAccount("a@b.com", 100.10));
+
+        // False Equivelance Class
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -0.01));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", 0.001));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -0.001));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -100));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -100.01));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -100.1));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -100.10));
     }
 
     @Test
     void isEmailValidTest() {
         assertTrue(BankAccount.isEmailValid("a@b.com")); // valid email address
         assertFalse(BankAccount.isEmailValid("")); // empty string
-        //False Cases -  Local
-        assertFalse(BankAccount.isEmailValid("abc-@mail.com")); 
-        assertFalse(BankAccount.isEmailValid("abc..def@mail.com"));
-        assertFalse(BankAccount.isEmailValid(".abc@mail.com"));
-        // False cases - Domain
-        assertFalse(BankAccount.isEmailValid("abc.def@mail.c"));
-        assertFalse(BankAccount.isEmailValid("abc.def@mail#archive.com"));
-        assertFalse(BankAccount.isEmailValid("abc.def@mail"));
-        assertFalse(BankAccount.isEmailValid("abc.def@mail..com"));
 
-        // Valid Cases - Local 
+        // False Cases - Local
+        assertFalse(BankAccount.isEmailValid("abc-@mail.com")); // hyphen at end
+        assertFalse(BankAccount.isEmailValid("abc..def@mail.com")); // double dots
+        assertFalse(BankAccount.isEmailValid(".abc@mail.com")); // dot at start
+        assertFalse(BankAccount.isEmailValid("a".repeat(65) + "@b.com")); // 65 characters
+
+        // False cases - Domain
+        assertFalse(BankAccount.isEmailValid("abc.def@mail.c")); // tld too short
+        assertFalse(BankAccount.isEmailValid("abc.def@mail#archive.com")); // illegal special character
+        assertFalse(BankAccount.isEmailValid("abc.def@mail")); // no tld
+        assertFalse(BankAccount.isEmailValid("abc.def@mail..com")); // double dots
+        assertFalse(BankAccount.isEmailValid("abc@" + "abcdefg.".repeat(31) + "abcdef")); // domain too long
+        assertFalse(BankAccount.isEmailValid("abc@" + "c".repeat(64) + ".com")); // subdomain too long
+        assertFalse(BankAccount.isEmailValid("abc@mail." + "c".repeat(64))); // tld too long
+
+        // Valid Cases - Local
         assertTrue(BankAccount.isEmailValid("abc-d@mail.com"));
         assertTrue(BankAccount.isEmailValid("abc.def@mail.com"));
         assertTrue(BankAccount.isEmailValid("abc@mail.com"));
         assertTrue(BankAccount.isEmailValid("abc_def@mail.com"));
+        assertTrue(BankAccount.isEmailValid("a".repeat(64) + "@b.com")); // 64
+                                                                         // characters
 
         // Valid Cases - Domain
         assertTrue(BankAccount.isEmailValid("abc.def@mail.cc"));
         assertTrue(BankAccount.isEmailValid("abc.def@mail-archive.com"));
         assertTrue(BankAccount.isEmailValid("abc.def@mail.org"));
         assertTrue(BankAccount.isEmailValid("abc.def@mail.com"));
-
-
+        assertTrue(BankAccount.isEmailValid("abc@" + "abcdefg.".repeat(31) + "abcde"));
+        assertTrue(BankAccount.isEmailValid("abc@" + "c".repeat(63) + ".com"));
+        assertTrue(BankAccount.isEmailValid("abc@mail." + "c".repeat(63)));
     }
 
     @Test
@@ -58,6 +100,10 @@ class BankAccountTest {
         assertEquals(200, bankAccount.getBalance(), 0.001);
         // check for exception thrown correctly
         assertThrows(IllegalArgumentException.class, () -> new BankAccount("", 100));
+
+        // check for invalid amount exception
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", -100));
+        assertThrows(IllegalArgumentException.class, () -> new BankAccount("a@b.com", 100.001));
     }
 
 }

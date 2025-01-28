@@ -10,14 +10,26 @@ public class BankAccount {
 
     /**
      * @throws IllegalArgumentException if email is invalid
+     * @throws IllegalArgumentException if startingBalance is negative or has more
      */
     public BankAccount(String email, double startingBalance) {
-        if (isEmailValid(email)) {
-            this.email = email;
-            this.balance = startingBalance;
-        } else {
+        isAmountValid(startingBalance);
+
+        if (!isEmailValid(email)) {
             throw new IllegalArgumentException("Email address: " + email + " is invalid, cannot create account");
         }
+
+        this.email = email;
+        this.balance = startingBalance;
+    }
+
+    /**
+     * 
+     * @param amount amount to check
+     * @throws IllegalArgumentException if amount is negative or has more than two
+     */
+    private void isAmountValid(double amount) throws IllegalArgumentException {
+
     }
 
     public double getBalance() {
@@ -29,14 +41,25 @@ public class BankAccount {
     }
 
     /**
+     * @pre amount is non-negative
+     * @param amount amount to withdraw (non-negative with two decimal places)
+     * @throws InsufficientFundsException if amount is greater than balance
+     * @throws IllegalArgumentException   if amount is negative or has more than two
+     *                                    decimal places
      * @post reduces the balance by amount if amount is non-negative and smaller
      *       than balance
      */
     public void withdraw(double amount) throws InsufficientFundsException {
+        if (amount <= 0)
+            throw new IllegalArgumentException("Cannot withdraw a negative or zero amount");
+
+        if (amount * 100 != (int) (amount * 100))
+            throw new IllegalArgumentException("Amount must have at most two decimal places");
+
         if (amount <= balance) {
             balance -= amount;
         } else {
-            throw new InsufficientFundsException("Not enough money");
+            throw new InsufficientFundsException("Insufficient balance for requested withdrawal amount");
         }
     }
 
