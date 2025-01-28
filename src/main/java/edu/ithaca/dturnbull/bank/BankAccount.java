@@ -77,7 +77,8 @@ public class BankAccount {
      * @post increases the balance by amount if amount is non-negative
      */
     public void deposit(double amount) {
-
+        isAmountValid(amount);
+        balance += amount;
     }
 
     /**
