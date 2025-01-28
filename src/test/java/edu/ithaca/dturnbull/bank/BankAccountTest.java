@@ -57,6 +57,32 @@ class BankAccountTest {
     }
 
     @Test
+    void transferTest() {
+        BankAccount source = new BankAccount("a@b.com", 200);
+        BankAccount dest = new BankAccount("a@b.com", 0);
+
+        // Valid cases
+        assertDoesNotThrow(() -> BankAccount.transfer(source, dest, 100));
+        assertEquals(100, source.getBalance(), 0.001);
+        assertEquals(100, dest.getBalance(), 0.001);
+
+        assertDoesNotThrow(() -> BankAccount.transfer(source, dest, 0.01));
+        assertEquals(99.99, source.getBalance(), 0.001);
+        assertEquals(100.01, dest.getBalance(), 0.001);
+
+        assertDoesNotThrow(() -> BankAccount.transfer(source, dest, 0));
+        assertEquals(99.99, source.getBalance(), 0.001);
+        assertEquals(100.01, dest.getBalance(), 0.001);
+
+        // Invalid cases
+        assertThrows(InsufficientFundsException.class, () -> BankAccount.transfer(source, dest, 100.01));
+        assertThrows(InsufficientFundsException.class, () -> BankAccount.transfer(source, dest, 100.001));
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(source, dest, -100));
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(source, dest, 0.001));
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(source, dest, -100.001));
+    }
+
+    @Test
     void isAmountValidTest() {
         // True Equivelance Class
         assertDoesNotThrow(() -> new BankAccount("a@b.com", 0));

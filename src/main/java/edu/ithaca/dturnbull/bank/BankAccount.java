@@ -82,6 +82,20 @@ public class BankAccount {
     }
 
     /**
+     * 
+     * @param source account to transfer from
+     * @param dest   account to transfer to
+     * @param amount amount to transfer
+     * @throws InsufficientFundsException if amount is greater than balance
+     * @throws IllegalArgumentException   if amount is negative or has more than two
+     *                                    decimal places
+     */
+    public static void transfer(BankAccount source, BankAccount dest, double amount)
+            throws InsufficientFundsException {
+
+    }
+
+    /**
      * @param email email to validate
      * @return true if email is valid, false otherwise
      */
