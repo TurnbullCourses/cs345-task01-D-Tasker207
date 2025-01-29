@@ -92,6 +92,14 @@ public class BankAccount {
      */
     public static void transfer(BankAccount source, BankAccount dest, double amount)
             throws InsufficientFundsException {
+        if (source == null || dest == null) {
+            throw new IllegalArgumentException("Source and destination accounts must be non-null");
+        }
+
+        if (source == dest) {
+            throw new IllegalArgumentException("Source and destination accounts must be different");
+        }
+
         isAmountValid(amount);
         source.withdraw(amount);
         dest.deposit(amount);
@@ -127,6 +135,21 @@ public class BankAccount {
     // alphanumeric sequences of 1-63 characters separated by dots, with hypens
     // allowed but not at the beginning or end
 
+    private static boolean validatePrefix(String local) {
+        Matcher localmatcher = PREFIX_PATTERN.matcher(local);
+        return localmatcher.find();
+    }
+
+    private static boolean validateDomain(String domain) {
+        return validateHostname(domain) || validateIPv4(domain) ||
+                validateIPv6(domain);
+    }
+
+    private static boolean validateHostname(String domain) {
+        Matcher hostMatcher = HOST_PATTERN.matcher(domain);
+        return hostMatcher.find() && domain.length() <= 253;
+    }
+
     private static final Pattern IPV4_PATTERN = Pattern.compile("^\\[(([0-9]{1,3}\\.){3}[0-9]{1,3})\\]$");
     // four sequences of 1-3 digits separated by dots within square brackets
 
@@ -144,21 +167,6 @@ public class BankAccount {
     // IPv6 address within square brackets, with 8 groups of 1-4 hexadecimal
     // digits separated by colons, with double colons allowed
     // to represent multiple groups of zeros
-
-    private static boolean validatePrefix(String local) {
-        Matcher localmatcher = PREFIX_PATTERN.matcher(local);
-        return localmatcher.find();
-    }
-
-    private static boolean validateDomain(String domain) {
-        return validateHostname(domain) || validateIPv4(domain) ||
-                validateIPv6(domain);
-    }
-
-    private static boolean validateHostname(String domain) {
-        Matcher hostMatcher = HOST_PATTERN.matcher(domain);
-        return hostMatcher.find() && domain.length() <= 253;
-    }
 
     private static boolean validateIPv4(String domain) {
         Matcher IPv4matcher = IPV4_PATTERN.matcher(domain);

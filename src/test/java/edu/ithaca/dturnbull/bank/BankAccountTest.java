@@ -18,14 +18,19 @@ class BankAccountTest {
         bankAccount.withdraw(100);
         assertEquals(100, bankAccount.getBalance(), 0.001);
 
-        // only up to two decimal places
-        bankAccount.withdraw(0.1);
+        // Valid cases
+        assertDoesNotThrow(() -> bankAccount.withdraw(0.1));
         assertEquals(99.90, bankAccount.getBalance(), 0.001);
-        bankAccount.withdraw(0.01);
+        assertDoesNotThrow(() -> bankAccount.withdraw(0.01));
         assertEquals(99.89, bankAccount.getBalance(), 0.001);
+        assertDoesNotThrow(() -> bankAccount.withdraw(0));
+        assertEquals(99.89, bankAccount.getBalance(), 0.001);
+        assertDoesNotThrow(() -> bankAccount.withdraw(99.89));
+        assertEquals(0, bankAccount.getBalance(), 0.001);
+
+        // checking exception is thrown when withdrawing negative or more than two
+        // decimal places
         assertThrows(IllegalArgumentException.class, () -> bankAccount.withdraw(100.001));
-        bankAccount.withdraw(0);
-        assertEquals(99.89, bankAccount.getBalance(), 0.001);
 
         // checking exception is thrown when withdrawing more than balance
         assertThrows(InsufficientFundsException.class, () -> bankAccount.withdraw(300));
@@ -41,15 +46,15 @@ class BankAccountTest {
         assertEquals(bankAccount.getBalance(), 0, 0.001);
 
         // Valid cases
-        bankAccount.deposit(0);
+        assertDoesNotThrow(() -> bankAccount.deposit(0));
         assertEquals(bankAccount.getBalance(), 0, 0.001);
-        bankAccount.deposit(100);
+        assertDoesNotThrow(() -> bankAccount.deposit(100));
         assertEquals(bankAccount.getBalance(), 100, 0.001);
-        bankAccount.deposit(0.01);
+        assertDoesNotThrow(() -> bankAccount.deposit(0.01));
         assertEquals(bankAccount.getBalance(), 100.01, 0.001);
-        bankAccount.deposit(0.1);
+        assertDoesNotThrow(() -> bankAccount.deposit(0.1));
         assertEquals(bankAccount.getBalance(), 100.11, 0.001);
-        bankAccount.deposit(0.10);
+        assertDoesNotThrow(() -> bankAccount.deposit(0.10));
         assertEquals(bankAccount.getBalance(), 100.21, 0.001);
 
         // Invalid cases
@@ -77,7 +82,20 @@ class BankAccountTest {
         assertEquals(99.99, source.getBalance(), 0.001);
         assertEquals(100.01, dest.getBalance(), 0.001);
 
+        assertDoesNotThrow(() -> BankAccount.transfer(source, dest, 99.99));
+        assertEquals(0, source.getBalance(), 0.001);
+        assertEquals(200, dest.getBalance(), 0.001);
+
+        source.deposit(200);
+
         // Invalid cases
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(source, null, 10));
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(null, dest, 10));
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(null, null, 10));
+
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(source, source, 10));
+        assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(dest, dest, 10));
+
         assertThrows(InsufficientFundsException.class, () -> BankAccount.transfer(source, dest, 100.01));
         assertThrows(InsufficientFundsException.class, () -> BankAccount.transfer(source, dest, 300));
         assertThrows(IllegalArgumentException.class, () -> BankAccount.transfer(source, dest, 100.001));
@@ -110,6 +128,12 @@ class BankAccountTest {
     void isEmailValidTest() {
         assertTrue(BankAccount.isEmailValid("a@b.com")); // valid email address
         assertFalse(BankAccount.isEmailValid("")); // empty string
+
+        // False cases - General
+        assertFalse(BankAccount.isEmailValid("abc")); // no @
+        assertFalse(BankAccount.isEmailValid("abc@")); // no domain
+        assertFalse(BankAccount.isEmailValid("@.com")); // no prefix
+        assertFalse(BankAccount.isEmailValid("abc@def@ghi.com")); // multiple @
 
         // False Cases - Local
         assertFalse(BankAccount.isEmailValid("abc-@mail.com")); // hyphen at end
